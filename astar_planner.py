@@ -1,14 +1,9 @@
-"""
-astar_planner.py  –  Module 3: A* Delivery Path Planner
-Plans shortest safe routes through the 10×10 grid, honouring no-fly zones.
-Route structure: hub → pickup → drop-off → hub
-"""
 import heapq
 from typing import List, Optional, Tuple
 from grid_model import manhattan
 
 
-# ── Cost model ────────────────────────────────────────────────────────────────
+#Cost model
 def move_cost(cell) -> float:
     """Cost to enter a cell."""
     if cell.no_fly:
@@ -18,7 +13,7 @@ def move_cost(cell) -> float:
     return 1.0
 
 
-# ── A* core ───────────────────────────────────────────────────────────────────
+# A* core 
 def astar(start: Tuple[int,int],
           goal: Tuple[int,int],
           grid) -> dict:
@@ -78,7 +73,7 @@ def astar(start: Tuple[int,int],
             "message": f"No safe route from {start} to {goal} (all paths blocked)."}
 
 
-# ── Full delivery route: hub → pickup → drop-off → hub ───────────────────────
+#  Full delivery route: hub -> pickup -> drop-off -> hub
 def plan_delivery_route(hub: Tuple, pickup: Tuple, dropoff: Tuple, grid) -> dict:
     """Chains three A* calls to create a complete delivery route."""
     seg1 = astar(hub, pickup, grid)
@@ -86,7 +81,7 @@ def plan_delivery_route(hub: Tuple, pickup: Tuple, dropoff: Tuple, grid) -> dict
     seg3 = astar(dropoff, hub, grid) if (seg2 and seg2["found"]) else None
 
     if seg3 and seg3["found"]:
-        # Stitch segments (avoid duplicating junction nodes)
+        # Stitch segments 
         full_path = seg1["path"] + seg2["path"][1:] + seg3["path"][1:]
         total_cost = seg1["cost"] + seg2["cost"] + seg3["cost"]
         return {"path": full_path, "cost": total_cost, "found": True,
@@ -99,7 +94,7 @@ def plan_delivery_route(hub: Tuple, pickup: Tuple, dropoff: Tuple, grid) -> dict
                 "message": f"Route failed at segment {failed_seg}."}
 
 
-# ── Delivery dataclass ────────────────────────────────────────────────────────
+# Delivery dataclass 
 from dataclasses import dataclass, field
 
 @dataclass
