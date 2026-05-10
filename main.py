@@ -1,23 +1,7 @@
-"""
-main.py  –  AeroNet Lite: Entry Point
-======================================
-Autonomous Drone Delivery Simulation with CSP, Fleet Planning,
-A* Routing, Real-Time Replanning, Demand Forecasting, and Anomaly Detection.
-
-Run modes
----------
-  python main.py            → interactive menu
-  python main.py --full     → run all modules sequentially (non-interactive)
-  python main.py --sim      → run 20-step simulation only
-  python main.py --ml       → run ML pipeline only
-  python main.py --vis      → open visual dashboard
-"""
-
 import sys
 import argparse
 import random
 
-# ── Module imports ─────────────────────────────────────────────────────────────
 from grid_model import (
     build_default_grid, print_grid_summary,
     hub_cells, charging_cells, medical_cells,
@@ -32,11 +16,6 @@ from astar_planner import (
 from delivery_simulator import run_simulation
 from ml_pipeline import run_forecast, run_anomaly_detection
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-# Individual demo runners
-# ══════════════════════════════════════════════════════════════════════════════
-
 def demo_grid():
     """Module 0 – Build and display the 10×10 city grid."""
     print("\n" + "=" * 65)
@@ -45,7 +24,6 @@ def demo_grid():
     grid = build_default_grid()
     print_grid_summary(grid)
 
-    # Quick stats
     hubs     = hub_cells(grid)
     chargers = charging_cells(grid)
     medicals = medical_cells(grid)
@@ -110,7 +88,6 @@ def demo_astar(grid=None):
     result = plan_delivery_route(hub, pickup, dropoff, grid)
     print_route("Full delivery route", result)
 
-    # Also show 3 random delivery routes
     print("\n  -- Random delivery sample (3 deliveries) --")
     deliveries = generate_deliveries(grid, n=3)
     hubs = [(h.row, h.col) for h in hub_cells(grid)]
@@ -150,10 +127,7 @@ def demo_visualization(grid=None):
         print(f"\n  [Visualization] Error: {exc}")
 
 
-# ══════════════════════════════════════════════════════════════════════════════
 # Full sequential run
-# ══════════════════════════════════════════════════════════════════════════════
-
 def run_all():
     """Run every module in order, then launch the 20-step simulation."""
     random.seed(42)
@@ -179,9 +153,7 @@ def run_all():
     print("█" * 65 + "\n")
 
 
-# ══════════════════════════════════════════════════════════════════════════════
 # Interactive menu
-# ══════════════════════════════════════════════════════════════════════════════
 
 MENU = """
 ╔══════════════════════════════════════════════════════╗
@@ -232,10 +204,7 @@ def interactive_menu():
             print("  Invalid choice – please try again.")
 
 
-# ══════════════════════════════════════════════════════════════════════════════
 # CLI entry point
-# ══════════════════════════════════════════════════════════════════════════════
-
 def parse_args():
     parser = argparse.ArgumentParser(
         description="AeroNet Lite – Autonomous Drone Delivery Simulator"
