@@ -1,13 +1,3 @@
-"""
-ml_pipeline.py  –  Module 5: Demand Forecasting & Anomaly Detection
-
-Demand Forecasting  : Linear Regression + Random Forest on synthetic
-                      data shaped like the Bike Sharing Demand dataset.
-Anomaly Detection   : Decision Tree classifier on synthetic drone telemetry.
-
-Both use sklearn. Real Kaggle datasets can be dropped into data/raw/
-and loaded with the commented-out loaders below.
-"""
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
@@ -19,10 +9,7 @@ from sklearn.metrics import (mean_absolute_error, mean_squared_error,
                               classification_report)
 
 
-# ═══════════════════════════════════════════════════════════════════════
 # Part A  –  Demand Forecasting
-# ═══════════════════════════════════════════════════════════════════════
-
 def generate_demand_data(n: int = 800, seed: int = 42) -> pd.DataFrame:
     """
     Synthetic dataset inspired by the Bike Sharing Demand Kaggle competition.
@@ -55,18 +42,7 @@ def generate_demand_data(n: int = 800, seed: int = 42) -> pd.DataFrame:
 
 
 def load_demand_data(n_synthetic: int = 800, seed: int = 42) -> pd.DataFrame:
-    """
-    Attempts to load the real Bike Sharing Demand dataset (Kaggle).
-    Falls back to synthetic data if the file is not present.
-
-    To use the real dataset:
-      1. Download train.csv from https://www.kaggle.com/c/bike-sharing-demand
-      2. Place it at  data/train.csv  (relative to main.py)
-
-    Real dataset columns used:
-      datetime, temp (normalised 0-1), weather (1-4), count (total demand)
-    Synthetic dataset mirrors the same feature set for compatibility.
-    """
+   
     import os
     real_path = os.path.join("data", "train.csv")
     if os.path.exists(real_path):
@@ -131,10 +107,8 @@ def run_forecast(verbose: bool = True) -> float:
     return min(lr_mae, rf_mae)
 
 
-# ═══════════════════════════════════════════════════════════════════════
-# Part B  –  Anomaly Detection / Classification
-# ═══════════════════════════════════════════════════════════════════════
 
+# Part B  –  Anomaly Detection / Classification
 ANOMALY_CLASSES = {0: "Normal", 1: "Battery anomaly",
                    2: "Route anomaly", 3: "Sensor spike"}
 
