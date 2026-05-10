@@ -1,7 +1,3 @@
-"""
-layout_validator.py  –  Module 1: CSP-based Grid Layout Validator
-Checks four hard constraints and returns a structured validation report.
-"""
 from grid_model import (
     get_neighbors, manhattan, cells_of_type,
     hub_cells, charging_cells, medical_cells
@@ -81,12 +77,9 @@ def check_medical_access(grid):
     ]
 
 
-# ── Main entry point ──────────────────────────────────────────────────────────
+# Main entry point
 def validate_layout(grid) -> dict:
-    """
-    Run all four CSP rules.
-    Returns a dict with keys: passed, failed, violations, valid (bool).
-    """
+   
     rules = {
         "R1 - Industrial Safety":       check_industrial_safety(grid),
         "R2 - Residential Hub Coverage": check_residential_coverage(grid),
