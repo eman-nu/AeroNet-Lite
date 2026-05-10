@@ -1,13 +1,8 @@
-"""
-fleet_selector.py  –  Module 2: Fleet Selection
-Selects a mix of Light and Heavy drones under a fixed budget.
-Supports both brute-force exhaustive search and a Genetic Algorithm.
-"""
 import random
 from dataclasses import dataclass
 from typing import List, Tuple
 
-# ── Drone specs ───────────────────────────────────────────────────────────────
+#  Drone specs
 @dataclass
 class DroneType:
     name: str
@@ -22,7 +17,7 @@ BUDGET = 10_000      # total budget in currency units
 MAX_DRONES = 10      # upper bound per type for search
 
 
-# ── Fitness function ──────────────────────────────────────────────────────────
+# Fitness function 
 def coverage_score(n_light: int, n_heavy: int, total_demand: float) -> float:
     """
     Estimates how much demand the fleet can cover.
@@ -48,7 +43,7 @@ def fitness(n_light: int, n_heavy: int, budget: int, total_demand: float) -> flo
     return 0.75 * coverage_pct - 0.25 * budget_pct
 
 
-# ── Brute-force search ────────────────────────────────────────────────────────
+# Brute-force search 
 def brute_force_select(budget: int = BUDGET,
                        total_demand: float = 50.0) -> Tuple[int, int, float]:
     best_score = -999.0
@@ -62,7 +57,7 @@ def brute_force_select(budget: int = BUDGET,
     return best[0], best[1], best_score
 
 
-# ── Genetic Algorithm ─────────────────────────────────────────────────────────
+# Genetic Algorithm 
 def ga_select(budget: int = BUDGET,
               total_demand: float = 50.0,
               pop_size: int = 40,
@@ -105,7 +100,7 @@ def ga_select(budget: int = BUDGET,
     return best[0], best[1], fit(best)
 
 
-# ── Drone instances ───────────────────────────────────────────────────────────
+#  Drone instances 
 @dataclass
 class Drone:
     drone_id: str
