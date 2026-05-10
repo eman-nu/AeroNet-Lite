@@ -1,12 +1,8 @@
-"""
-grid_model.py  –  AeroNet Lite shared data model
-Defines Cell, the 10×10 grid, and utility helpers used by every module.
-"""
 from dataclasses import dataclass, field
 from typing import List, Dict, Optional
 import random
 
-# ── Zone types ──────────────────────────────────────────────────────────────
+# Zone types 
 ZONES = ["Residential", "Commercial", "Industrial", "Hospital",
          "School", "Open Field"]
 
@@ -19,7 +15,7 @@ ZONE_COLORS = {
     "Open Field":  "#B8E986",
 }
 
-# ── Cell ─────────────────────────────────────────────────────────────────────
+# Cell 
 @dataclass
 class Cell:
     row: int
@@ -42,7 +38,7 @@ class Cell:
         return f"Cell({self.row},{self.col} {self.zone[:3]} {tag})"
 
 
-# ── Grid builder ─────────────────────────────────────────────────────────────
+#Grid builder 
 def build_default_grid() -> List[List[Cell]]:
     """
     Hard-coded 10×10 city that satisfies all four CSP constraints by design.
@@ -118,7 +114,7 @@ def build_default_grid() -> List[List[Cell]]:
     return grid
 
 
-# ── Utility helpers ───────────────────────────────────────────────────────────
+#  Utility helpers
 def get_cell(grid, row: int, col: int) -> Optional[Cell]:
     if 0 <= row < 10 and 0 <= col < 10:
         return grid[row][col]
