@@ -1,7 +1,3 @@
-"""
-delivery_simulator.py  –  Module 4: Real-Time Disruption Handler
-Moves drones step by step. Activates no-fly cells and triggers A* rerouting.
-"""
 import random
 from typing import List, Dict
 from grid_model import build_default_grid, hub_cells
@@ -9,13 +5,10 @@ from fleet_selector import Drone, create_fleet, ga_select
 from astar_planner import (Delivery, generate_deliveries,
                             plan_delivery_route, astar)
 
-# Each simulation "tick" moves a drone this many cells along its route.
-# With routes averaging ~20 cells and a 20-step window, a value of 3
-# allows shorter deliveries to complete while longer ones finish later.
 STEPS_PER_TICK = 3
 
 
-# ── Event logger ──────────────────────────────────────────────────────────────
+# Event logger 
 event_log: List[str] = []
 
 def log(step: int, msg: str):
@@ -24,7 +17,7 @@ def log(step: int, msg: str):
     print(entry)
 
 
-# ── Assign deliveries to drones ───────────────────────────────────────────────
+# Assign deliveries to drones 
 def assign_deliveries(drones: List[Drone],
                       deliveries: List[Delivery],
                       grid,
@@ -52,14 +45,14 @@ def assign_deliveries(drones: List[Drone],
             delivery.status = "failed"
 
 
-# ── Move drones one step along their route ────────────────────────────────────
+# Move drones one step along their route 
 def step_drones(drones: List[Drone], deliveries: List[Delivery],
                 grid, step: int):
     for drone in drones:
         if drone.status != "en_route" or not drone.route:
             continue
 
-        # Advance STEPS_PER_TICK cells (or reach end of route)
+        # Advance STEPS_PER_TICK cells 
         for _ in range(STEPS_PER_TICK):
             if drone.route_index >= len(drone.route) - 1:
                 break
@@ -67,7 +60,6 @@ def step_drones(drones: List[Drone], deliveries: List[Delivery],
             drone.position = drone.route[drone.route_index]
             drone.battery -= random.uniform(0.5, 1.0)   # per-cell cost
 
-        # Check if delivery is complete (reached hub at end of route)
         if drone.route_index >= len(drone.route) - 1:
             drone.status = "idle"
             if drone.current_delivery:
@@ -79,7 +71,7 @@ def step_drones(drones: List[Drone], deliveries: List[Delivery],
             drone.route_index = 0
 
 
-# ── Activate a no-fly cell and reroute affected drones ───────────────────────
+#Activate a no-fly cell and reroute affected drones 
 def activate_no_fly(grid, row: int, col: int,
                     drones: List[Drone],
                     step: int):
@@ -92,7 +84,7 @@ def activate_no_fly(grid, row: int, col: int,
         # Check if blocked cell is still ahead in route
         remaining = drone.route[drone.route_index:]
         if (row, col) in remaining:
-            # Reroute from current position to delivery dropoff → hub
+            # Reroute from current position to delivery dropoff -> hub
             delivery = drone.current_delivery
             if delivery is None:
                 continue
@@ -113,7 +105,7 @@ def activate_no_fly(grid, row: int, col: int,
                           f"delivery {delivery.delivery_id if delivery else '?'} delayed.")
 
 
-# ── Inject an anomaly ─────────────────────────────────────────────────────────
+#  Inject an anomaly 
 def inject_anomaly(drones: List[Drone], step: int, anomaly_log: list):
     en_route = [d for d in drones if d.status == "en_route"]
     if not en_route:
@@ -136,7 +128,6 @@ def inject_anomaly(drones: List[Drone], step: int, anomaly_log: list):
             drone.current_delivery.status = "delayed"
 
 
-# ── Main 20-step simulation ───────────────────────────────────────────────────
 def run_simulation():
     random.seed(42)
     global event_log
@@ -147,7 +138,7 @@ def run_simulation():
     print("          AERONET LITE  –  20-STEP SIMULATION")
     print("="*65)
 
-    # ── Steps 1-3: Init, validate, select fleet ──────────────────────────────
+    # Steps 1-3: Init, validate, select fleet
     grid = build_default_grid()
     log(1, "Grid initialized (10×10 city model).")
 
@@ -166,7 +157,7 @@ def run_simulation():
     log(3, f"Fleet selected: {n_l} light drones, {n_h} heavy drones "
          f"(fitness={score:.3f}).")
 
-    # ── Steps 4-6: Generate deliveries and assign ────────────────────────────
+    # Steps 4-6: Generate deliveries and assign 
     deliveries = generate_deliveries(grid, n=8)
     log(4, f"Generated {len(deliveries)} deliveries.")
 
@@ -174,21 +165,21 @@ def run_simulation():
 
     log(6, "Initial routes computed via A* for all assigned deliveries.")
 
-    # ── Steps 7-10: Move drones ───────────────────────────────────────────────
+    # Steps 7-10: Move drones
     for s in range(7, 11):
         step_drones(drones, deliveries, grid, s)
         assigned = [d for d in drones if d.status == "en_route"]
         log(s, f"Drones moved. {len(assigned)} en route.")
 
-    # ── Step 11: Activate a no-fly cell ──────────────────────────────────────
+    # Step 11: Activate a no-fly cell 
     activate_no_fly(grid, 4, 7, drones, 11)
 
-    # ── Steps 12-14: Continue movement after rerouting ────────────────────────
+    # Steps 12-14: Continue movement after rerouting 
     for s in range(12, 15):
         step_drones(drones, deliveries, grid, s)
         assign_deliveries(drones, deliveries, grid, s)   # pick up any new pending
 
-    # ── Steps 15-17: Demand forecast ─────────────────────────────────────────
+    #  Steps 15-17: Demand forecast
     log(15, "Running demand forecast (ML pipeline)…")
     try:
         from ml_pipeline import run_forecast
@@ -200,10 +191,10 @@ def run_simulation():
     for s in range(16, 18):
         step_drones(drones, deliveries, grid, s)
 
-    # ── Step 18: Inject anomaly ───────────────────────────────────────────────
+    # Step 18: Inject anomaly
     inject_anomaly(drones, 18, anomaly_log)
 
-    # ── Steps 19-20: Final movement + summary ────────────────────────────────
+    #  Steps 19-20: Final movement + summary 
     step_drones(drones, deliveries, grid, 19)
     for d in drones:
         if d.status == "returning":
@@ -212,7 +203,7 @@ def run_simulation():
 
     step_drones(drones, deliveries, grid, 20)
 
-    # ── Final summary ─────────────────────────────────────────────────────────
+    #  Final summary 
     completed = sum(1 for dv in deliveries if dv.status == "completed")
     delayed   = sum(1 for dv in deliveries if dv.status == "delayed")
     failed    = sum(1 for dv in deliveries if dv.status == "failed")
